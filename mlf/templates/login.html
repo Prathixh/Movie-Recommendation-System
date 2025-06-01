@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        --accent-color: #764ba2;
+        --text-light: rgba(255,255,255,0.9);
+        --text-muted: rgba(255,255,255,0.7);
+        --bg-dark: #0f0f1a;
+        --bg-card: rgba(30, 30, 50, 0.8);
+        --input-bg: rgba(255,255,255,0.1);
+        --input-border: rgba(255,255,255,0.2);
+    }
+
+    body {
+        background: var(--bg-dark) url('https://source.unsplash.com/random/1920x1080/?cinema,movie') no-repeat center center fixed;
+        background-size: cover;
+        color: var(--text-light);
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 15, 26, 0.85);
+        z-index: -1;
+    }
+
+    .auth-container {
+        display: flex;
+        width: 900px;
+        height: 600px;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-hero {
+        flex: 1;
+        background: var(--primary-gradient);
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-hero::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+        100% { transform: rotate(360deg); }
+    }
+
+    .auth-hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .auth-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+
+    .auth-hero p {
+        font-size: 1rem;
+        margin-bottom: 30px;
+        color: var(--text-muted);
+        max-width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .auth-hero img {
+        width: 200px;
+        margin-bottom: 30px;
+        filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+    }
+
+    .auth-card {
+        flex: 1;
+        background: var(--bg-card);
+        backdrop-filter: blur(10px);
+        padding: 60px 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .auth-card h2 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        font-weight: 600;
+        background: var(--secondary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .auth-card p.subtitle {
+        color: var(--text-muted);
+        margin-bottom: 30px;
+        font-size: 0.95rem;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 14px 20px 14px 45px;
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        border-radius: 8px;
+        color: var(--text-light);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.3);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted);
+        opacity: 0.7;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .auth-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-btn i {
+        margin-right: 10px;
+    }
+
+    .auth-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+    }
+
+    .auth-footer {
+        margin-top: 25px;
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .auth-footer a {
+        color: #c3cfe2;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .auth-footer a:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    .alert {
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        font-size: 0.9rem;
+        background: rgba(255, 71, 87, 0.2);
+        border-left: 4px solid #ff4757;
+        color: #ff6b81;
+    }
+
+    .social-login {
+        margin-top: 30px;
+    }
+
+    .social-login p {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .social-login p::before,
+    .social-login p::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 30%;
+        height: 1px;
+        background: var(--input-border);
+    }
+
+    .social-login p::before {
+        left: 0;
+    }
+
+    .social-login p::after {
+        right: 0;
+    }
+
+    .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .social-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--input-bg);
+        color: white;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .social-icon:hover {
+        transform: translateY(-3px);
+    }
+
+    .social-icon.google { background: #DB4437; }
+    .social-icon.facebook { background: #4267B2; }
+    .social-icon.twitter { background: #1DA1F2; }
+
+    .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+    }
+
+    .remember-me input {
+        margin-right: 8px;
+    }
+
+    .forgot-password a {
+        color: #c3cfe2;
+        text-decoration: none;
+    }
+
+    .forgot-password a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-hero">
+        <div class="auth-hero-content">
+            <h1>Welcome Back!</h1>
+            <p>Login to your MoodFlix account to continue your cinematic journey. Access your watchlist, get personalized recommendations, and join the conversation.</p>
+            <p>Don't have an account yet?</p>
+            <a href="{{ url_for('register') }}" class="auth-btn" style="background: transparent; border: 1px solid rgba(255,255,255,0.3);">
+                Sign Up
+            </a>
+        </div>
+    </div>
+    
+    <div class="auth-card">
+        <h2>Login</h2>
+        <p class="subtitle">Sign in to your MoodFlix account</p>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                    <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="auth-btn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+
+            <div class="auth-footer">
+                <p>By logging in, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const passwordInput = document.querySelector('#password');
+
+    togglePassword.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.classList.toggle('fa-eye-slash');
+    });
+
+    // Add animation to form elements
+    document.querySelectorAll('.form-group').forEach((el, i) => {
+        el.style.animationDelay = `${i * 0.1}s`;
+        el.style.animation = `fadeInUp 0.5s ease forwards`;
+        el.style.opacity = '0';
+    });
+
+    // Add floating animation to hero section
+    const hero = document.querySelector('.auth-hero-content');
+    let floatY = 0;
+    let floatX = 0;
+    let yDirection = 1;
+    let xDirection = 1;
+    
+    function floatAnimation() {
+        if (floatY >= 5) yDirection = -1;
+        if (floatY <= -5) yDirection = 1;
+        if (floatX >= 5) xDirection = -1;
+        if (floatX <= -5) xDirection = 1;
+        
+        floatY += 0.1 * yDirection;
+        floatX += 0.05 * xDirection;
+        
+        hero.style.transform = `translate(${floatX}px, ${floatY}px)`;
+        requestAnimationFrame(floatAnimation);
+    }
+    
+    floatAnimation();
+</script>
+{% endblock %}

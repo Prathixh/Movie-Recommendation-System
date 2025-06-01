@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | MoodFlix</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #0a0a0f;
+            --secondary-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --accent-color: #e94560;
+            --accent-light: #ff6b88;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b3c1;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 100px; /* Space for bottom navigation */
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+            font-weight: 600;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logout-btn {
+            background: var(--gradient-2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(233, 69, 96, 0.4);
+        }
+
+        /* Main Content Sections */
+        .section {
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .content-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            background: var(--gradient-3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Home Section */
+        .featured-movies-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .featured-movies {
+            display: flex;
+            overflow: hidden;
+            scroll-behavior: smooth;
+            gap: 20px;
+            padding: 10px 0;
+        }
+
+        .movie-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            flex: 0 0 calc(33.333% - 14px);
+            min-width: 0;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-color);
+        }
+
+        .movie-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .movie-rating {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: var(--primary-bg);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .scroll-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .scroll-btn:hover {
+            background: var(--accent-color);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .scroll-left {
+            left: -20px;
+        }
+
+        .scroll-right {
+            right: -20px;
+        }
+
+        /* Search Section */
+        .search-form {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 25px;
+            font-size: 16px;
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px rgba(233, 69, 96, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-btn {
+            background: var(--gradient-2);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(233, 69, 96, 0.4);
+        }
+
+        .mood-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .mood-btn {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .mood-btn:hover {
+            background: var(--gradient-1);
+            border-color: transparent;
+            transform: translateY(-2px);
+        }
+
+        /* Results */
+        .results-container {
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent-color);
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .favorite-btn {
+            background: var(--gradient-2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+        }
+
+        /* Loading and Error States */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+
+        .loading::before {
+            content: '🎬';
+            display: block;
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        .error {
+            background: linear-gradient(135deg, #ff4757, #ff3838);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            padding: 15px 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+        }
+
+        .nav-item.active {
+            color: var(--text-primary);
+            background: var(--gradient-1);
+        }
+
+        .nav-item:hover {
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Wishlist */
+        .wishlist-item, .history-item {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .wishlist-item:hover, .history-item:hover {
+            transform: translateX(5px);
+            border-color: var(--accent-color);
+        }
+
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #ff3838;
+            transform: scale(1.05);
+        }
+
+        .clear-history-btn {
+            background: var(--gradient-2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            transition: all 0.3s ease;
+        }
+
+        .clear-history-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(233, 69, 96, 0.4);
+        }
+
+        /* Profile */
+        .profile-info {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .profile-details {
+            margin: 20px 0;
+        }
+
+        .profile-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .profile-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .profile-value {
+            color: var(--text-secondary);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            animation: fadeInOut 2.5s ease-in-out;
+            opacity: 0;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-15px); }
+            60% { transform: translateY(-8px); }
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .search-form { flex-direction: column; }
+            .movie-card { flex: 0 0 calc(100% - 20px); }
+            .result-details { grid-template-columns: 1fr; }
+            .nav-container { padding: 0 15px; }
+            .nav-item { padding: 6px 8px; }
+            .nav-icon { font-size: 18px; }
+            .nav-label { font-size: 11px; }
+            .scroll-btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="welcome-text">Welcome, {{ username }}!</div>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+        </header>
+
+        <!-- Home Section -->
+        <div id="home" class="section active">
+            <div class="content-card">
+                <h2 class="section-title">🎬 Top Rated Movies</h2>
+                <div class="featured-movies-container">
+                    <div class="scroll-btn scroll-left" onclick="scrollMovies(-1)">❮</div>
+                    <div class="featured-movies" id="featuredMovies">
+                        <!-- Featured movies will be populated here -->
+                    </div>
+                    <div class="scroll-btn scroll-right" onclick="scrollMovies(1)">❯</div>
+                </div>
+            </div>
+            
+            <div class="content-card">
+                <h3 style="text-align: center; margin-bottom: 20px; color: var(--text-primary);">Quick Search by Mood</h3>
+                <div class="mood-buttons">
+                    <button class="mood-btn" onclick="searchByMood('happy')">😊 Happy</button>
+                    <button class="mood-btn" onclick="searchByMood('sad')">😢 Sad</button>
+                    <button class="mood-btn" onclick="searchByMood('excited')">🤩 Excited</button>
+                    <button class="mood-btn" onclick="searchByMood('romantic')">💕 Romantic</button>
+                    <button class="mood-btn" onclick="searchByMood('scared')">😱 Scared</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div id="search" class="section">
+            <div class="content-card">
+                <h2 class="section-title">🔍 Search Movies</h2>
+                
+                <form id="searchForm" class="search-form">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search by movie name, genre, actor, or keywords..." required>
+                    <button type="submit" class="search-btn">Search</button>
+                </form>
+
+                <div style="text-align: center;">
+                    <p style="color: var(--text-secondary); margin-bottom: 15px;">Or search by mood:</p>
+                    <div class="mood-buttons">
+                        <button class="mood-btn" onclick="searchByMood('happy')">😊 Happy</button>
+                        <button class="mood-btn" onclick="searchByMood('sad')">😢 Sad</button>
+                        <button class="mood-btn" onclick="searchByMood('excited')">🤩 Excited</button>
+                        <button class="mood-btn" onclick="searchByMood('romantic')">💕 Romantic</button>
+                        <button class="mood-btn" onclick="searchByMood('scared')">😱 Scared</button>
+                    </div>
+                </div>
+
+                <div id="searchResults" class="results-container"></div>
+            </div>
+        </div>
+
+        <!-- Wishlist Section -->
+        <div id="wishlist" class="section">
+            <div class="content-card">
+                <h2 class="section-title">❤️ Your Wishlist</h2>
+                <div id="wishlistContainer">
+                    <p style="text-align: center; color: var(--text-secondary); padding: 20px;">Your wishlist is empty. Add some movies to get started!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div id="history" class="section">
+            <div class="content-card">
+                <h2 class="section-title">📚 Search History</h2>
+                <div id="historyContainer">
+                    <p style="text-align: center; color: var(--text-secondary); padding: 20px;">No search history yet. Start searching for movies!</p>
+                </div>
+                <button id="clearHistoryBtn" class="clear-history-btn" onclick="clearSearchHistory()">Clear Search History</button>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profile" class="section">
+            <div class="content-card">
+                <h2 class="section-title">👤 My Profile</h2>
+                <div class="profile-info">
+                    <div class="profile-card">
+                        <div class="profile-details">
+                            <div class="profile-item">
+                                <span class="profile-label">Username:</span>
+                                <span class="profile-value">{{ username }}</span>
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Movies in Wishlist:</span>
+                                <span class="profile-value" id="wishlistCount">0</span>
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Searches Made:</span>
+                                <span class="profile-value" id="searchCount">0</span>
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Member Since:</span>
+                                <span class="profile-value">{{ "Since 2025" }}</span>
+                            </div>
+                        </div>
+                        <button class="search-btn" onclick="showStatistics()">View Statistics</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-container">
+            <div class="nav-item active" onclick="showSection('home')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item" onclick="showSection('search')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-label">Search</div>
+            </div>
+            <div class="nav-item" onclick="showSection('wishlist')">
+                <div class="nav-icon">❤️</div>
+                <div class="nav-label">Wishlist</div>
+            </div>
+            <div class="nav-item" onclick="showSection('history')">
+                <div class="nav-icon">📚</div>
+                <div class="nav-label">History</div>
+            </div>
+            <div class="nav-item" onclick="showSection('profile')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        let searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+        let searchCount = parseInt(localStorage.getItem('searchCount') || '0');
+        let currentScrollPosition = 0;
+
+        // Sample featured movies
+        const featuredMovies = [
+            { title: "The Shawshank Redemption", year: 1994, genre: "Drama", rating: 9.3},
+            { title: "The Godfather", year: 1972, genre: "Crime", rating: 9.2 },
+            { title: "The Dark Knight", year: 2008, genre: "Action", rating: 9.0 },
+            { title: "Pulp Fiction", year: 1994, genre: "Crime", rating: 8.9 },
+            { title: "Schindler's List", year: 1993, genre: "Biography", rating: 8.9 },
+            { title: "The Lord of the Rings: The Return of the King", year: 2003, genre: "Adventure", rating: 8.9 },
+            { title: "Fight Club", year: 1999, genre: "Drama", rating: 8.8 },
+            { title: "Forrest Gump", year: 1994, genre: "Drama", rating: 8.8 },
+            { title: "Inception", year: 2010, genre: "Sci-Fi", rating: 8.8 },
+            { title: "The Matrix", year: 1999, genre: "Sci-Fi", rating: 8.7 }
+        ];
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            populateFeaturedMovies();
+            updateWishlist();
+            updateHistory();
+            updateProfileStats();
+        }
+
+        // Show section
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Add active class to nav item
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                if (item.textContent.includes(sectionName.charAt(0).toUpperCase() + sectionName.slice(1))) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Populate featured movies with swiping animation
+        function populateFeaturedMovies() {
+            const container = document.getElementById('featuredMovies');
+            container.innerHTML = featuredMovies.map(movie => `
+                <div class="movie-card" onclick="addToWishlist('${movie.title}')">
+                    <div class="movie-title">${movie.title}</div>
+                    <div class="movie-info">
+                        ${movie.year} • ${movie.genre}
+                    </div>
+                    <span class="movie-rating">★ ${movie.rating}/10</span>
+                </div>
+            `).join('');
+        }
+
+        // Scroll movies horizontally
+        function scrollMovies(direction) {
+            const container = document.querySelector('.featured-movies');
+            const cardWidth = document.querySelector('.movie-card').offsetWidth + 20; // width + gap
+            const scrollAmount = cardWidth * 3 * direction; // scroll 3 cards at a time
+            
+            container.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+
+        // Search form submission
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                performSearch(query);
+            }
+        });
+
+        // Perform search
+        async function performSearch(query) {
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '<div class="loading">Searching for movies...</div>';
+            
+            try {
+                const formData = new FormData();
+                formData.append('query', query);
+                
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Search failed');
+                }
+                
+                const results = await response.json();
+                displaySearchResults(results, query);
+                
+                // Add to search history
+                addToSearchHistory(query);
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsContainer.innerHTML = '<div class="error">Search failed. Please try again.</div>';
+            }
+        }
+
+        // Search by mood
+        async function searchByMood(mood) {
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '<div class="loading">Finding movies for your mood...</div>';
+            
+            // Switch to search section if not already there
+            showSection('search');
+            
+            try {
+                const formData = new FormData();
+                formData.append('mood', mood);
+                
+                const response = await fetch('/mood', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Mood search failed');
+                }
+                
+                const results = await response.json();
+                displaySearchResults(results, `${mood} mood`);
+                
+                // Add to search history
+                addToSearchHistory(`${mood} mood`);
+                
+            } catch (error) {
+                console.error('Mood search error:', error);
+                resultsContainer.innerHTML = '<div class="error">Mood search failed. Please try again.</div>';
+            }
+        }
+
+        // Display search results (removed similarity score)
+        function displaySearchResults(results, query) {
+            const resultsContainer = document.getElementById('searchResults');
+            
+            if (!results || results.length === 0) {
+                resultsContainer.innerHTML = '<div class="error">No movies found. Try a different search term.</div>';
+                return;
+            }
+            
+            resultsContainer.innerHTML = `
+                <h3 style="margin-bottom: 20px; color: var(--text-primary);">Search Results for "${query}"</h3>
+                ${results.map(movie => `
+                    <div class="result-card">
+                        <div class="result-title">${movie.title}</div>
+                        <div class="result-details">
+                            <div><strong>Year:</strong> ${movie.year || 'Unknown'}</div>
+                            <div><strong>Genre:</strong> ${movie.genre || 'Unknown'}</div>
+                            <div><strong>Director:</strong> ${movie.director || 'Unknown'}</div>
+                            <div><strong>Actors:</strong> ${movie.actors || 'Unknown'}</div>
+                        </div>
+                        <div class="result-actions">
+                            <button class="favorite-btn" onclick="addToWishlist('${movie.title}')">
+                                Add to Wishlist
+                            </button>
+                            <span class="movie-rating">★ ${movie.rating || 'N/A'}</span>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // Add to wishlist
+        function addToWishlist(movieTitle) {
+            if (!wishlist.includes(movieTitle)) {
+                wishlist.push(movieTitle);
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                updateWishlist();
+                updateProfileStats();
+                
+                // Try to add to server as well
+                const formData = new FormData();
+                formData.append('movie_title', movieTitle);
+                fetch('/add_favorite', {
+                    method: 'POST',
+                    body: formData
+                }).catch(error => console.error('Error adding to server wishlist:', error));
+                
+                // Show feedback
+                showToast(`"${movieTitle}" added to wishlist!`);
+            } else {
+                showToast(`"${movieTitle}" is already in your wishlist!`);
+            }
+        }
+
+        // Remove from wishlist
+        function removeFromWishlist(movieTitle) {
+            wishlist = wishlist.filter(title => title !== movieTitle);
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            updateWishlist();
+            updateProfileStats();
+            showToast(`"${movieTitle}" removed from wishlist!`);
+        }
+
+        // Update wishlist display
+        function updateWishlist() {
+            const container = document.getElementById('wishlistContainer');
+            
+            if (wishlist.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">Your wishlist is empty. Add some movies to get started!</p>';
+                return;
+            }
+            
+            container.innerHTML = wishlist.map(movie => `
+                <div class="wishlist-item">
+                    <span>${movie}</span>
+                    <button class="remove-btn" onclick="removeFromWishlist('${movie}')">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        // Add to search history
+        function addToSearchHistory(query) {
+            const timestamp = new Date().toLocaleString();
+            searchHistory.unshift({ query, timestamp });
+            
+            // Keep only last 20 searches
+            if (searchHistory.length > 20) {
+                searchHistory = searchHistory.slice(0, 20);
+            }
+            
+            searchCount++;
+            localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+            localStorage.setItem('searchCount', searchCount.toString());
+            updateHistory();
+            updateProfileStats();
+        }
+
+        // Clear search history
+        function clearSearchHistory() {
+            if (searchHistory.length === 0) {
+                showToast("Your search history is already empty!");
+                return;
+            }
+            
+            if (confirm("Are you sure you want to clear your search history?")) {
+                searchHistory = [];
+                searchCount = 0;
+                localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                localStorage.setItem('searchCount', searchCount.toString());
+                updateHistory();
+                updateProfileStats();
+                showToast("Search history cleared!");
+            }
+        }
+
+        // Update history display
+        function updateHistory() {
+            const container = document.getElementById('historyContainer');
+            const clearBtn = document.getElementById('clearHistoryBtn');
+            
+            if (searchHistory.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">No search history yet. Start searching for movies!</p>';
+                clearBtn.style.display = 'none';
+                return;
+            }
+            
+            container.innerHTML = searchHistory.map(item => `
+                <div class="history-item">
+                    <div>
+                        <div style="font-weight: 600;">${item.query}</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">${item.timestamp}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            clearBtn.style.display = 'block';
+        }
+
+        // Update profile statistics
+        function updateProfileStats() {
+            document.getElementById('wishlistCount').textContent = wishlist.length;
+            document.getElementById('searchCount').textContent = searchCount;
+        }
+
+        // Show statistics (placeholder)
+        function showStatistics() {
+            alert("Statistics feature coming soon!");
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2500);
+        }
+
+        // Initialize dashboard when page loads
+        window.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html>

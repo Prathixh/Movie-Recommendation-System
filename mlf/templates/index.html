@@ -1,0 +1,592 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #6c5ce7;
+        --primary-dark: #5649c0;
+        --secondary: #fd79a8;
+        --dark: #1a1a2e;
+        --darker: #16213e;
+        --light: #f8f9fa;
+        --gradient: linear-gradient(135deg, #6c5ce7 0%, #fd79a8 100%);
+        --glow: 0 0 15px rgba(108, 92, 231, 0.5);
+    }
+    
+    body {
+        background: var(--darker);
+        color: var(--light);
+        font-family: 'Poppins', sans-serif;
+        overflow-x: hidden;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(145deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    }
+
+    .hero-bg-pattern {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: url("{{ url_for('static', filename='images/image.png') }}") center/300px 300px;
+        opacity: 0.05;
+        animation: patternMove 100s linear infinite;
+    }
+
+    @keyframes patternMove {
+        0% { background-position: 0 0; }
+        100% { background-position: 300px 300px; }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 3;
+        max-width: 600px;
+    }
+
+    .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: var(--glow);
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 1s 0.3s forwards;
+    }
+
+    .hero-subtitle {
+        font-size: clamp(1rem, 2vw, 1.3rem);
+        color: rgba(255,255,255,0.85);
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 1s 0.5s forwards;
+    }
+
+    .hero-buttons {
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 1s 0.7s forwards;
+    }
+
+    .hero-buttons .btn {
+        font-size: 1.1rem;
+        padding: 15px 32px;
+        border-radius: 50px;
+        margin-right: 15px;
+        margin-bottom: 15px;
+        font-weight: 500;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary {
+        background: var(--gradient);
+        border: none;
+        z-index: 1;
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #fd79a8 0%, #6c5ce7 100%);
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 30px rgba(108,92,231,0.6);
+    }
+
+    .btn-primary:hover::before {
+        opacity: 1;
+    }
+
+    .btn-outline-light {
+        border: 2px solid rgba(255,255,255,0.3);
+        background: transparent;
+        color: white;
+        z-index: 1;
+    }
+
+    .btn-outline-light:hover {
+        background: rgba(255,255,255,0.1);
+        border-color: white;
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 20px rgba(255,255,255,0.1);
+    }
+
+    .hero-image {
+        position: relative;
+        perspective: 1000px;
+        transform: translateX(50px);
+        opacity: 0;
+        animation: fadeInRight 1s 0.9s forwards;
+    }
+
+    .hero-image-container {
+        position: relative;
+        transform-style: preserve-3d;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotateX(5deg) rotateY(10deg); }
+        50% { transform: translateY(-20px) rotateX(7deg) rotateY(12deg); }
+    }
+
+    .hero-image img {
+        width: 100%;
+        max-width: 500px;
+        border-radius: 20px;
+        box-shadow: 0 25px 60px -12px rgba(0,0,0,0.8);
+        border: 5px solid rgba(255,255,255,0.1);
+        transform: rotateY(15deg) rotateX(5deg);
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+
+    .hero-image:hover img {
+        transform: rotateY(5deg) rotateX(3deg);
+        box-shadow: 0 35px 70px -10px rgba(108,92,231,0.4);
+    }
+
+    .hero-image::before {
+        content: '';
+        position: absolute;
+        width: 120%;
+        height: 120%;
+        top: -10%;
+        left: -10%;
+        background: radial-gradient(circle, rgba(108,92,231,0.2) 0%, transparent 60%);
+        border-radius: 30px;
+        z-index: -1;
+        animation: pulse 8s infinite alternate;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(0.95); opacity: 0.5; }
+        100% { transform: scale(1); opacity: 0.8; }
+    }
+
+    /* Features Section */
+    .features-section {
+        position: relative;
+        padding: 120px 0;
+        background: url("{{ url_for('static', filename='') }}"), 
+                    linear-gradient(145deg, #0f0c29 0%, #24243e 100%);
+        overflow: hidden;
+    }
+
+    .features-bg {
+        position: absolute;
+        width: 150%;
+        height: 150%;
+        top: -25%;
+        left: -25%;
+        background: radial-gradient(circle, rgba(253,121,168,0.03) 0%, transparent 70%);
+        animation: rotate 40s linear infinite;
+    }
+
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .section-title {
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 70px;
+        position: relative;
+        display: inline-block;
+        transform: translateY(30px);
+        opacity: 0;
+        animation: fadeInUp 1s 0.4s forwards;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--gradient);
+        border-radius: 2px;
+    }
+
+    .feature-item {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 20px;
+        padding: 40px 30px;
+        text-align: center;
+        height: 100%;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    .feature-item:nth-child(1) { animation: fadeInUp 0.8s 0.6s forwards; }
+    .feature-item:nth-child(2) { animation: fadeInUp 0.8s 0.8s forwards; }
+    .feature-item:nth-child(3) { animation: fadeInUp 0.8s 1.0s forwards; }
+
+    .feature-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--gradient);
+    }
+
+    .feature-item::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 50px;
+        height: 50px;
+        background: radial-gradient(circle, rgba(253,121,168,0.1) 0%, transparent 70%);
+        transition: all 0.4s ease;
+    }
+
+    .feature-item:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+        border-color: rgba(108,92,231,0.3);
+    }
+
+    .feature-item:hover::after {
+        transform: scale(1.5);
+    }
+
+    .feature-icon {
+        margin-bottom: 25px;
+    }
+
+    .feature-icon i {
+        font-size: 3rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-item:hover .feature-icon i {
+        transform: scale(1.2);
+    }
+
+    .feature-item h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .feature-item p {
+        font-size: 1rem;
+        color: rgba(255,255,255,0.7);
+        line-height: 1.7;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        padding: 100px 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-bg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: var(--gradient);
+        opacity: 0.9;
+        z-index: 1;
+    }
+
+    .cta-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+    }
+
+    .cta-title {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .cta-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.9;
+    }
+
+    .cta-btn {
+        font-size: 1.2rem;
+        padding: 18px 40px;
+        border-radius: 50px;
+        background: white;
+        color: var(--primary-dark);
+        font-weight: 600;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .cta-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    }
+
+    .cta-particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        overflow: hidden;
+    }
+
+    .particle {
+        position: absolute;
+        background: rgba(255,255,255,0.6);
+        border-radius: 50%;
+        animation: float-up 15s linear infinite;
+    }
+
+    @keyframes float-up {
+        0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { transform: translateY(-100px) translateX(100px); opacity: 0; }
+    }
+
+    /* Animation Keyframes */
+    @keyframes fadeInUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeInRight {
+        from { transform: translateX(50px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 991.98px) {
+        .hero-section {
+            text-align: center;
+            padding-top: 120px;
+            padding-bottom: 80px;
+        }
+        
+        .hero-buttons .btn {
+            margin: 10px;
+        }
+        
+        .hero-image {
+            margin-top: 60px;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .feature-item {
+            padding: 30px 20px;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-bg-pattern"></div>
+    
+    <div class="container d-flex flex-column flex-lg-row align-items-center justify-content-between py-5">
+        <div class="hero-content">
+            <h1 class="hero-title">Discover Your Perfect Movie Match</h1>
+            <p class="hero-subtitle">Our AI-powered recommendation system analyzes thousands of films to find the perfect match for your mood, preferences, and viewing history. Say goodbye to endless scrolling!</p>
+            <div class="hero-buttons">
+                {% if 'user_id' in session %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                        <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                    </a>
+                    <a href="{{ url_for('recommendations') }}" class="btn btn-outline-light">
+                        <i class="fas fa-magic me-2"></i>Get Recommendations
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('register') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>Get Started
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="hero-image-container">
+                <img src="{{ url_for('static', filename='images/poster3.jpg') }}" alt="Movie Poster" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="features-bg"></div>
+    <div class="container">
+        <h2 class="section-title">Why Choose MoodFlix?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI-Powered Recommendations</h3>
+                    <p>Our neural network analyzes your viewing patterns and preferences to suggest films you'll love, with accuracy that improves over time.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Mood-Based Selection</h3>
+                    <p>Tell us how you're feeling and we'll curate a personalized list of movies that match your current emotional state perfectly.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                    <h3>Smart Watchlists</h3>
+                    <p>Create multiple watchlists for different moods, occasions, or genres. Our system will even suggest when to watch each film.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="cta-bg"></div>
+    <div class="cta-particles" id="particles-js"></div>
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Transform Your Movie Nights?</h2>
+            <p class="cta-subtitle">Join thousands of happy users discovering their perfect films every day.</p>
+            <a href="{{ url_for('register') if 'user_id' not in session else url_for('dashboard') }}" class="btn cta-btn">
+                <i class="fas fa-rocket me-2"></i>
+                {{ 'Start Your Journey' if 'user_id' not in session else 'Explore More Features' }}
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create floating particles for CTA section
+        const ctaParticles = document.getElementById('particles-js');
+        const particleCount = 20;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            // Random properties
+            const size = Math.random() * 8 + 2;
+            const posX = Math.random() * 100;
+            const delay = Math.random() * 15;
+            const duration = Math.random() * 10 + 10;
+            
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${posX}%`;
+            particle.style.animationDelay = `${delay}s`;
+            particle.style.animationDuration = `${duration}s`;
+            
+            ctaParticles.appendChild(particle);
+        }
+        
+        // Parallax effect for hero image
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.pageYOffset;
+            const heroImage = document.querySelector('.hero-image-container');
+            
+            if (heroImage) {
+                heroImage.style.transform = `translateY(${scrollPosition * 0.1}px) rotateX(${5 + scrollPosition * 0.01}deg) rotateY(${10 + scrollPosition * 0.02}deg)`;
+            }
+        });
+        
+        // Animate features on scroll
+        const animateOnScroll = function() {
+            const elements = document.querySelectorAll('.feature-item');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementPosition < windowHeight - 100) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); // Run once on load
+        
+        // Hover effect for feature items
+        const featureItems = document.querySelectorAll('.feature-item');
+        featureItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    });
+</script>
+{% endblock %}
